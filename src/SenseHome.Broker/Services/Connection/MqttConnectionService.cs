@@ -8,14 +8,18 @@ namespace SenseHome.Broker.Services.Connection
 {
     public class MqttConnectionService : IMqttConnectionService
     {
-        public void ConfigureMqttServer(IMqttServer mqtt)
+        private IMqttServer mqttServer;
+
+        public void ConfigureMqttServer(IMqttServer mqttServer)
         {
-            throw new System.NotImplementedException();
+            this.mqttServer = mqttServer;
+            mqttServer.ClientConnectedHandler = this;
+            mqttServer.ClientDisconnectedHandler = this;
         }
 
         public void ConfigureMqttServerOptions(AspNetMqttServerOptionsBuilder options)
         {
-            throw new System.NotImplementedException();
+            options.WithConnectionValidator(this);
         }
 
         public Task HandleClientConnectedAsync(MqttServerClientConnectedEventArgs eventArgs)
@@ -28,9 +32,9 @@ namespace SenseHome.Broker.Services.Connection
             throw new System.NotImplementedException();
         }
 
-        public Task ValidateConnectionAsync(MqttConnectionValidatorContext context)
+        public async Task ValidateConnectionAsync(MqttConnectionValidatorContext context)
         {
-            throw new System.NotImplementedException();
+            await Task.FromResult(context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.Success);
         }
     }
 }

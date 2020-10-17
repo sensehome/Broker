@@ -4,7 +4,7 @@ using MQTTnet.Server;
 
 namespace SenseHome.Broker.Services.Subscription
 {
-    public class SubscriptionService : IMqttSubscriptionService
+    public class MqttSubscriptionService : IMqttSubscriptionService
     {
         public void ConfigureMqttServer(IMqttServer mqtt)
         {
