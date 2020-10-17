@@ -7,4 +7,11 @@
   <ItemGroup>
     <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.12" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Services\Connection\" />
+    <Folder Include="Services\Publishing\" />
+    <Folder Include="Services\Server\" />
+    <Folder Include="Services\Subscription\" />
+  </ItemGroup>
 </Project>
