@@ -6,19 +6,21 @@ namespace SenseHome.Broker.Services.Publishing
 {
     public class MqttPublishingService : IMqttPublishingService
     {
-        public void ConfigureMqttServer(IMqttServer mqtt)
+        private IMqttServer mqttServer;
+
+        public void ConfigureMqttServer(IMqttServer mqttServer)
         {
-            throw new System.NotImplementedException();
+            this.mqttServer = mqttServer;
         }
 
         public void ConfigureMqttServerOptions(AspNetMqttServerOptionsBuilder options)
         {
-            throw new System.NotImplementedException();
+            options.WithApplicationMessageInterceptor(this);
         }
 
-        public Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
+        public async Task InterceptApplicationMessagePublishAsync(MqttApplicationMessageInterceptorContext context)
         {
-            throw new System.NotImplementedException();
+            await Task.FromResult(context.AcceptPublish = true);
         }
 
         public Task InterceptClientMessageQueueEnqueueAsync(MqttClientMessageQueueInterceptorContext context)
