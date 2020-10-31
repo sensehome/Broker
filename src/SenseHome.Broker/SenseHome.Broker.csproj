@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Services\Connection\" />
+    <Folder Include="Services\Publishing\" />
+    <Folder Include="Services\Server\" />
+    <Folder Include="Services\Subscription\" />
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+</Project>
