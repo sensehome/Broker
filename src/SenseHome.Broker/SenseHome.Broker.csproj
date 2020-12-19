@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.12" />
+    <PackageReference Include="MQTTnet.AspNetCore" Version="3.0.13" />
+    <PackageReference Include="SenseHome.DataTransferObjects" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\" />
@@ -14,5 +15,7 @@
     <Folder Include="Services\Server\" />
     <Folder Include="Services\Subscription\" />
     <Folder Include="Configuration\" />
+    <Folder Include="Services\Api\" />
+    <Folder Include="Settings\" />
   </ItemGroup>
 </Project>
