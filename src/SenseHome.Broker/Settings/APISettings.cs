@@ -1,7 +1,7 @@
 ﻿using System;
 namespace SenseHome.Broker.Settings
 {
-    public class APISettings
+    public class ApiSettings
     {
         public string Host { get; set; }
         public string UserLoginRoute { get; set; }

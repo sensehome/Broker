@@ -12,9 +12,9 @@ namespace SenseHome.Broker.Services.Api
 {
     public class ApiService : IApiService
     {
-        private readonly APISettings settings;
+        private readonly ApiSettings settings;
 
-        public ApiService(APISettings settings)
+        public ApiService(ApiSettings settings)
         {
             this.settings = settings;
         }
