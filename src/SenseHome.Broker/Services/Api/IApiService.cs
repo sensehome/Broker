@@ -10,6 +10,6 @@ namespace SenseHome.Broker.Services.Api
     {
         Task<TokenDto> LoginAsync(UserLoginDto loginDto);
         Task<UserDto> GetUserProfileAsync(TokenDto tokenDto);
-        Task<IEnumerable<SubscriptionDto>> GetUserSubscriptionsAsync(string userId, TokenDto token);
+        Task<SubscriptionDto> GetUserSubscriptionsAsync(string userId, TokenDto token);
     }
 }

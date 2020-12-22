@@ -54,16 +54,13 @@ namespace SenseHome.Broker.Services.Subscription
             var tokenDto = new TokenDto { Bearer = bearer.ToString() };
             try
             {
-                var subscriptions = await apiService.GetUserSubscriptionsAsync(context.ClientId, tokenDto);
-                foreach (var sub in subscriptions)
+                var subscription = await apiService.GetUserSubscriptionsAsync(context.ClientId, tokenDto);
+                foreach (var path in subscription.Path)
                 {
-                    foreach (var p in sub.Path)
+                    if (MqttTopicFilterComparer.IsMatch(context.TopicFilter.Topic, path))
                     {
-                        if (MqttTopicFilterComparer.IsMatch(context.TopicFilter.Topic, p))
-                        {
-                            context.AcceptSubscription = true;
-                            return;
-                        }
+                        context.AcceptSubscription = true;
+                        return;
                     }
                 }
                 context.AcceptSubscription = false;

@@ -47,7 +47,7 @@ namespace SenseHome.Broker.Services.Api
             }
         }
 
-        public async Task<IEnumerable<SubscriptionDto>> GetUserSubscriptionsAsync(string userId, TokenDto token)
+        public async Task<SubscriptionDto> GetUserSubscriptionsAsync(string userId, TokenDto token)
         {
             var httpClient = new HttpClient();
             var subscriptionRoute = settings.UserSubscriptionRoute.Replace("{id}", userId);
@@ -57,8 +57,8 @@ namespace SenseHome.Broker.Services.Api
             if (response.IsSuccessStatusCode)
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                var subscriptionDtos = JsonConvert.DeserializeObject<List<SubscriptionDto>>(responseString);
-                return subscriptionDtos;
+                var subscription = JsonConvert.DeserializeObject<SubscriptionDto>(responseString);
+                return subscription;
             }
             else
             {
