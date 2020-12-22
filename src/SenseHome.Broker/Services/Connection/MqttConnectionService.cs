@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using SenseHome.Broker.Services.Api;
 using SenseHome.Common.Exceptions;
 using SenseHome.DataTransferObjects.Authentication;
+using SenseHome.DataTransferObjects.User;
 
 namespace SenseHome.Broker.Services.Connection
 {
@@ -46,18 +48,35 @@ namespace SenseHome.Broker.Services.Connection
             {
                 var loginDto = new UserLoginDto { Name = context.Username, Password = context.Password };
                 var tokenDto = await apiService.LoginAsync(loginDto);
-                var userDto = await apiService.GetUserProfileAsync(tokenDto);
-                if(userDto.Id != context.ClientId)
+                try
                 {
-                    context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.ClientIdentifierNotValid;
+                    var userDto = await apiService.GetUserProfileAsync(tokenDto);
+                    if (userDto.Id != context.ClientId)
+                    {
+                        context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.ClientIdentifierNotValid;
+                    }
+                    else
+                    {
+                        context.SessionItems.Add("bearer", tokenDto.Bearer);
+                        context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.Success;
+                    }
                 }
-                else
+                catch (UnauthorizedException)
                 {
-                    context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.Success;
+                    context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.NotAuthorized;
+                }
+                catch (NotFoundException)
+                {
+                    context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.BadUserNameOrPassword;
+                }
+                catch (Exception)
+                {
+                    context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.UnspecifiedError;
                 }
             }
-            catch(UnauthorizedException)
+            catch (UnauthorizedException)
             {
+
                 context.ReasonCode = MQTTnet.Protocol.MqttConnectReasonCode.BadUserNameOrPassword;
             }
         }

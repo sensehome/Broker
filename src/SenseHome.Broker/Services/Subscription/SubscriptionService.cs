@@ -1,12 +1,22 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
+using SenseHome.Broker.Services.Api;
+using SenseHome.Common.Exceptions;
+using SenseHome.DataTransferObjects.Authentication;
 
 namespace SenseHome.Broker.Services.Subscription
 {
     public class MqttSubscriptionService : IMqttSubscriptionService
     {
         private IMqttServer mqttServer;
+        private readonly IApiService apiService;
+
+        public MqttSubscriptionService(IApiService apiService)
+        {
+            this.apiService = apiService;
+        }
 
         public void ConfigureMqttServer(IMqttServer mqttServer)
         {
@@ -33,12 +43,45 @@ namespace SenseHome.Broker.Services.Subscription
 
         public async Task InterceptSubscriptionAsync(MqttSubscriptionInterceptorContext context)
         {
-            await Task.FromResult(context.AcceptSubscription = true);
+            object bearer;
+            context.SessionItems.TryGetValue(nameof(bearer), out bearer);
+            if(bearer == null)
+            {
+                context.AcceptSubscription = false;
+                context.CloseConnection = true;
+                return;
+            }
+            var tokenDto = new TokenDto { Bearer = bearer.ToString() };
+            try
+            {
+                var subscriptions = await apiService.GetUserSubscriptionsAsync(context.ClientId, tokenDto);
+                foreach (var sub in subscriptions)
+                {
+                    foreach (var p in sub.Path)
+                    {
+                        if (MqttTopicFilterComparer.IsMatch(context.TopicFilter.Topic, p))
+                        {
+                            context.AcceptSubscription = true;
+                            return;
+                        }
+                    }
+                }
+                context.AcceptSubscription = false;
+            }
+            catch(UnauthorizedException)
+            {
+                context.AcceptSubscription = false;
+                context.CloseConnection = true;
+            }
+            catch(Exception)
+            {
+                context.AcceptSubscription = false;
+            } 
         }
 
-        public Task InterceptUnsubscriptionAsync(MqttUnsubscriptionInterceptorContext context)
+        public async Task InterceptUnsubscriptionAsync(MqttUnsubscriptionInterceptorContext context)
         {
-            throw new System.NotImplementedException();
+            await Task.FromResult(context.CloseConnection = false);
         }
     }
 }
