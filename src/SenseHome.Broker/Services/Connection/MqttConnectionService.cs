@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MQTTnet;
 using MQTTnet.AspNetCore;
 using MQTTnet.Server;
 using SenseHome.Broker.Services.Api;
+using SenseHome.Broker.Utility;
 using SenseHome.Common.Exceptions;
 using SenseHome.DataTransferObjects.Authentication;
-using SenseHome.DataTransferObjects.User;
+
 
 namespace SenseHome.Broker.Services.Connection
 {
@@ -13,10 +15,12 @@ namespace SenseHome.Broker.Services.Connection
     {
         private IMqttServer mqttServer;
         private readonly IApiService apiService;
+        private readonly BrokerEventTopics eventTopics;
 
-        public MqttConnectionService(IApiService apiService)
+        public MqttConnectionService(IApiService apiService, BrokerEventTopics eventTopics)
         {
             this.apiService = apiService;
+            this.eventTopics = eventTopics;
         }
 
 
@@ -32,14 +36,22 @@ namespace SenseHome.Broker.Services.Connection
             options.WithConnectionValidator(this);
         }
 
-        public Task HandleClientConnectedAsync(MqttServerClientConnectedEventArgs eventArgs)
+        public async Task HandleClientConnectedAsync(MqttServerClientConnectedEventArgs eventArgs)
         {
-            throw new System.NotImplementedException();
+            var serializedData = Utf8Json.JsonSerializer.Serialize(new { ClientId = eventArgs.ClientId });
+            var message = new MqttApplicationMessageBuilder().WithTopic(eventTopics.NewClientConnected)
+                                                             .WithPayload(serializedData)
+                                                             .Build();
+            await mqttServer.PublishAsync(message);
         }
 
-        public Task HandleClientDisconnectedAsync(MqttServerClientDisconnectedEventArgs eventArgs)
+        public async Task HandleClientDisconnectedAsync(MqttServerClientDisconnectedEventArgs eventArgs)
         {
-            throw new System.NotImplementedException();
+            var serializedData = Utf8Json.JsonSerializer.Serialize(new { ClientId = eventArgs.ClientId });
+            var message = new MqttApplicationMessageBuilder().WithTopic(eventTopics.NewClientDisconnected)
+                                                             .WithPayload(serializedData)
+                                                             .Build();
+            await mqttServer.PublishAsync(message);
         }
 
         public async Task ValidateConnectionAsync(MqttConnectionValidatorContext context)
