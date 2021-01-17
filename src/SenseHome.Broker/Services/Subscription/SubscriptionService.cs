@@ -23,12 +23,12 @@ namespace SenseHome.Broker.Services.Subscription
 
         public Task HandleClientSubscribedTopicAsync(MqttServerClientSubscribedTopicEventArgs eventArgs)
         {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task HandleClientUnsubscribedTopicAsync(MqttServerClientUnsubscribedTopicEventArgs eventArgs)
         {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public async Task InterceptSubscriptionAsync(MqttSubscriptionInterceptorContext context)

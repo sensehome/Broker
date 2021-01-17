@@ -25,7 +25,7 @@ namespace SenseHome.Broker.Services.Publishing
 
         public Task InterceptClientMessageQueueEnqueueAsync(MqttClientMessageQueueInterceptorContext context)
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(context.AcceptEnqueue);
         }
     }
 }
